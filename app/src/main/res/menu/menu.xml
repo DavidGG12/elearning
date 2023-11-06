@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#00B7FF">
+
+
+    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/busqueda_18"
+        android:title="Buscar"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/btnShoppingCar"
+        android:icon="@drawable/carrito_de_compras_18"
+        android:title="Carrito de Compras"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/btnUser"
+        android:icon="@drawable/usuario_18"
+        android:title="Iniciar Sesión"
+        app:showAsAction="ifRoom"
+        />
+
+</menu>
