@@ -86,7 +86,7 @@ class Login : AppCompatActivity()
 
         if(!res.emptyOrNot(email_login) && !res.emptyOrNot(password_login))
         {
-            var query_login = "SELECT NUSER, PSURNAME, MSURNAME, TYPE_USER_USER FROM USER WHERE EMAIL = ? AND PASSWORD = ?"
+            var query_login = "SELECT NUSER, PSURNAME, MSURNAME, DESCRIPTION, TYPE_USER_USER FROM USER WHERE EMAIL = ? AND PASSWORD = ?"
             var clauses = arrayOf(email_login, password_login)
             var cursor: Cursor = db.rawQuery(query_login, clauses)
 
@@ -96,6 +96,7 @@ class Login : AppCompatActivity()
                 var nameUser: String = cursor.getString(cursor.getColumnIndex("NUSER"))
                 var pSurNameUser: String = cursor.getString(cursor.getColumnIndex("PSURNAME"))
                 var mSurNameUser: String = cursor.getString(cursor.getColumnIndex("MSURNAME"))
+                var descriptionUser: String = cursor.getString(cursor.getColumnIndex("DESCRIPTION"))
                 var typeUser : String = cursor.getString(cursor.getColumnIndex("TYPE_USER_USER"))
 
                 editor.putString("emailUser", email_login)
@@ -103,6 +104,7 @@ class Login : AppCompatActivity()
                 editor.putString("nameUser", nameUser)
                 editor.putString("pSurNameUser", pSurNameUser)
                 editor.putString("mSurNameUser", mSurNameUser)
+                editor.putString("DESCRIPTION", descriptionUser)
                 editor.putString("typeUser", typeUser)
                 editor.apply()
 

@@ -98,13 +98,14 @@
         android:layout_width="241dp"
         android:layout_height="49dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/btnGeneral"
+        android:onClick="register"
         android:text="Registrar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bxRepeatPasswordRegister"
-        app:layout_constraintVertical_bias="0.015"
-        android:onClick="register"/>
+        app:layout_constraintVertical_bias="0.015" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

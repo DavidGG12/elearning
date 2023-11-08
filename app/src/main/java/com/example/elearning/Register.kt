@@ -1,6 +1,8 @@
 package com.example.elearning
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,6 +17,8 @@ import java.sql.SQLException
 
 class Register : AppCompatActivity()
 {
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
     private lateinit var dbHelper: connection
     private lateinit var db: SQLiteDatabase
     private lateinit var toolbar: Toolbar
@@ -32,6 +36,9 @@ class Register : AppCompatActivity()
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        sharedPreferences = getSharedPreferences("Session", Context.MODE_PRIVATE)
+        editor = sharedPreferences.edit()
 
         //Connection
         dbHelper = connection(this)
@@ -55,11 +62,21 @@ class Register : AppCompatActivity()
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
+        val validate = sharedPreferences.getString("emailUser", "")
+
         when(item.itemId)
         {
             R.id.btnUser ->{
-                val intent = Intent(this, Login::class.java)
-                startActivity(intent)
+                if(!validate.isNullOrBlank())
+                {
+                    val vtnProfile = Intent(this, Profile::class.java)
+                    startActivity(vtnProfile)
+                }
+                else
+                {
+                    val intent = Intent(this, Login::class.java)
+                    startActivity(intent)
+                }
             }
         }
         return super.onOptionsItemSelected(item)
