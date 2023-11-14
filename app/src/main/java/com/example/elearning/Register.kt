@@ -115,7 +115,6 @@ class Register : AppCompatActivity()
                         var values = arrayOf(nameRegister, pSurNameRegister, mSurNameRegister, emailRegister, mainPasswordRegister, typeUser)
 
                         db.execSQL(query_register, values)
-                        db.close()
 
                         val vtnMain = Intent(this, Login::class.java)
                         startActivity(vtnMain)

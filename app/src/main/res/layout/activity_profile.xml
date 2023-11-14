@@ -12,16 +12,16 @@
 
     <ImageView
         android:id="@+id/imgUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
+        android:layout_width="126dp"
+        android:layout_height="111dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="40dp"
         app:layout_constraintBottom_toTopOf="@+id/container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtWelcome"
         app:layout_constraintVertical_bias="0.06"
-        tools:ignore="MissingConstraints"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@drawable/profile"
+        />
 
     <TextView
         android:id="@+id/lbEmail"
@@ -60,19 +60,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="56dp"
-        android:backgroundTint="@color/btnRed"
-        android:onClick="logout"
-        android:text="Cerrar Sesión"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/container" />
-
     <ScrollView
         android:id="@+id/container"
         android:layout_width="323dp"
@@ -88,18 +75,51 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/lbDescription"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Descripción:"
-                android:textSize="15dp" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lbDescription"
+                    android:layout_width="108dp"
+                    android:layout_height="wrap_content"
+                    android:text="Descripción:"
+                    android:textSize="15dp" />
+
+                <Space
+                    android:layout_width="26dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0" />
+
+                <Button
+                    android:id="@+id/btnAddDescription"
+                    android:layout_width="56dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:width="12dp"
+                    android:backgroundTint="@color/btnAdd"
+                    android:onClick="addDescription"
+                    android:text="+" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sin Descripción" />
+                android:text="Sin Descripción"
+                android:visibility="visible"/>
+
+
+            <EditText
+                android:id="@+id/txtBxDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:textSize="15dp"
+                android:inputType="text"
+                android:hint="Descripcion"
+                android:visibility="gone"/>
 
             <Space
                 android:layout_width="match_parent"
@@ -122,25 +142,99 @@
                     android:layout_weight="0" />
 
                 <Button
-                    android:id="@+id/btnPlusMethod"
+                    android:id="@+id/btnAddMethod"
                     android:layout_width="56dp"
                     android:layout_height="38dp"
                     android:layout_weight="0"
                     android:width="12dp"
-                    android:backgroundTint="#5BBD05"
-                    android:text="+" />
+                    android:backgroundTint="@color/btnAdd"
+                    android:onClick="addPaymentMethod"
+                    android:text="+"
+                    />
             </LinearLayout>
 
             <Spinner
                 android:id="@+id/spMethods"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="invisible"/>
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="39dp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lbTeacher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profesor: "
+                    android:textSize="15dp" />
+
+                <Space
+                    android:layout_width="73dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0" />
+
+                <Button
+                    android:id="@+id/btnAddCourse"
+                    android:layout_width="56dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:backgroundTint="@color/btnAdd"
+                    android:visibility="invisible"
+                    android:text="+" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lbUserOrTeacher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¿Quieres convertirte en profesor?" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/lbWantTeacher"
+                    android:layout_width="101dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#0071FF"
+                    android:onClick="vtnTeacherRegister"
+                    android:text="Da click aquí" />
+
+            </LinearLayout>
+
+            <Spinner
+                android:id="@+id/spnrTeacher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="56dp"
+        android:backgroundTint="@color/btnRed"
+        android:onClick="logout"
+        android:text="Cerrar Sesión"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

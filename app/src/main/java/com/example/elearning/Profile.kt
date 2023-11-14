@@ -9,11 +9,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import org.w3c.dom.Text
+import java.sql.SQLException
 
-class Profile : AppCompatActivity() {
+class Profile : AppCompatActivity()
+{
     private lateinit var toolbar: Toolbar
     private lateinit var dbHelper: connection
     private lateinit var db: SQLiteDatabase
@@ -21,6 +27,12 @@ class Profile : AppCompatActivity() {
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var txtWelcome: TextView
     private lateinit var txtEmail: TextView
+    private lateinit var txtDescription: TextView
+    private lateinit var lbTeacherDescription: TextView
+    private lateinit var lbAddTeacher: TextView
+    private lateinit var txtBxDescription: EditText
+    private lateinit var spnrTeacherCourses: Spinner
+    private lateinit var btnAddTeacher: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +53,40 @@ class Profile : AppCompatActivity() {
 
         txtEmail = findViewById(R.id.txtEmail)
         txtEmail.setText(sharedPreferences.getString("emailUser", ""))
+
+        txtDescription = findViewById(R.id.txtDescription)
+        txtBxDescription = findViewById(R.id.txtBxDescription)
+
+        val valueDescription = sharedPreferences.getString("descriptionUser", "")
+        val validateTeacher = sharedPreferences.getString("typeUser", "")
+
+        if(!valueDescription.isNullOrBlank())
+        {
+            txtDescription.setText(valueDescription)
+        }
+        else
+        {
+            txtDescription.setText("Sin Descripción")
+        }
+
+        if(validateTeacher == "3")
+        {
+            lbTeacherDescription.visibility = View.GONE
+            lbAddTeacher.visibility = View.GONE
+            btnAddTeacher.visibility = View.VISIBLE
+            spnrTeacherCourses.visibility = View.VISIBLE
+        }
     }
 
-    override public fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override public fun onCreateOptionsMenu(menu: Menu?): Boolean
+    {
         menuInflater.inflate(R.menu.menu, menu)
         return true
         //return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
         val validate = sharedPreferences.getString("emailUser", "")
 
         when (item.itemId) {
@@ -66,6 +103,58 @@ class Profile : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+
+    public fun addDescription(v: View)
+    {
+        if(txtDescription.visibility == View.VISIBLE)
+        {
+            txtDescription.visibility = View.GONE
+            txtBxDescription.visibility = View.VISIBLE
+        }
+        else
+        {
+            var descriptionRegister: String? = txtBxDescription.text.toString()
+
+            when(descriptionRegister.isNullOrBlank())
+            {
+                false -> {
+                    var email = sharedPreferences.getString("emailUser", "")
+                    var password = sharedPreferences.getString("passwordUser", "")
+
+                    try
+                    {
+                        var queryDescriptionRegister = "UPDATE USER SET DESCRIPTION = ? WHERE EMAIL = ? AND PASSWORD = ?"
+                        var clausesDescriptionRegister = arrayOf(descriptionRegister, email, password)
+
+                        db.execSQL(queryDescriptionRegister, clausesDescriptionRegister)
+
+                        editor.putString("descriptionUser", descriptionRegister)
+                        editor.apply()
+                        Toast.makeText(this, "Hecho", Toast.LENGTH_SHORT).show()
+
+                        txtDescription.setText(descriptionRegister)
+                        txtDescription.visibility = View.VISIBLE
+                        txtBxDescription.visibility = View.GONE
+                    }
+                    catch (e: SQLException)
+                    {
+                        Toast.makeText(this, "Algo salió mal", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else -> {
+                    txtDescription.visibility = View.VISIBLE
+                    txtBxDescription.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    public fun addPaymentMethod(v: View)
+    {
+        var intent = Intent(this, Browse::class.java)
+        startActivity(intent)
+    }
+
     public fun logout(v: View)
     {
         editor.remove("emailUser")
@@ -75,8 +164,15 @@ class Profile : AppCompatActivity() {
         editor.remove("mSurNameUser")
         editor.remove("typeUser")
         editor.apply()
+        Toast.makeText(this, "¡Adiós!", Toast.LENGTH_SHORT).show()
         val vtnMain = Intent(this, MainActivity::class.java)
         startActivity(vtnMain)
+    }
+
+    public fun vtnTeacherRegister(v: View)
+    {
+        val vtnTeacherRegister = Intent(this, RegisterTeacher::class.java)
+        startActivity(vtnTeacherRegister)
     }
 
 }

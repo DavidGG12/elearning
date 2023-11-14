@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterTeacher">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
+    <ScrollView
+        android:id="@+id/scrollCreationRegister"
+        android:layout_width="327dp"
+        android:layout_height="655dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:visibility="visible"
+        app:layout_constraintVertical_bias="0.689">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lbWelcomeRegisterTeacher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Quieres volverte profesor?"
+                android:textAlignment="center"
+                android:textSize="30dp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="42dp" />
+
+            <TextView
+                android:id="@+id/lbDocuments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Necesitamos información para poder aceptarte:"
+                android:textSize="20dp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="23dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lbCURP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Sube tu CURP:"
+                    android:textAlignment="center"
+                    android:textSize="18dp" />
+
+                <Space
+                    android:layout_width="33dp"
+                    android:layout_height="match_parent" />
+
+                <Button
+                    android:id="@+id/btnAddCurp"
+                    android:layout_width="56dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:width="12dp"
+                    android:backgroundTint="@color/btnAdd"
+                    android:onClick="addCurp"
+                    android:text="+" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lbCurpNameDocument"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textSize="18dp"
+                android:textColor="@color/btnAdd"
+                android:visibility="invisible" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="23dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lbCurrency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Sube tu Cédula:"
+                    android:textAlignment="center"
+                    android:textSize="18dp" />
+
+                <Space
+                    android:layout_width="26dp"
+                    android:layout_height="match_parent" />
+
+                <Button
+                    android:id="@+id/btnAddCurrency"
+                    android:layout_width="56dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:width="12dp"
+                    android:backgroundTint="@color/btnAdd"
+                    android:onClick="addCurrency"
+                    android:text="+" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lbCurrencyNameDocument"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textSize="18dp"
+                android:textColor="@color/btnAdd"
+                android:visibility="invisible" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="23dp" />
+
+            <TextView
+                android:id="@+id/lbCellphone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Escribe tu numero de contacto:"
+                android:textSize="18dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Space
+                    android:layout_width="26dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0" />
+
+                <EditText
+                    android:id="@+id/txtLada"
+                    android:layout_width="64dp"
+                    android:layout_height="40dp"
+                    android:ems="10"
+                    android:hint="Lada"
+                    android:maxLength="4"
+                    android:inputType="phone" />
+
+                <Space
+                    android:layout_width="26dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0" />
+
+                <EditText
+                    android:id="@+id/txtPhoneNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_weight="0"
+                    android:ems="10"
+                    android:hint="Teléfono"
+                    android:maxLength="12"
+                    android:inputType="phone" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="96dp" />
+
+            <Button
+                android:id="@+id/btnRegisterTeacher"
+                android:layout_width="156dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="85dp"
+                android:backgroundTint="@color/btnGeneral"
+                android:onClick="teacherRegister"
+                android:text="Registrate"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <ScrollView
+        android:id="@+id/scrollViewSuccess"
+        android:layout_width="327dp"
+        android:layout_height="655dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/lbSuccess"
+                android:textSize="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="¡Felicidades!" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="17dp" />
+
+            <TextView
+                android:id="@+id/lbSuccess2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textAlignment="center"
+                android:text="¡Tus archivos han sido enviados!" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/lbSuccess3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:textAlignment="center"
+                android:text="Ahora nos toca a nosotros revisarlos, te daremos la respuesta en, máximo, 1 mes." />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/scrollViewWaiting"
+        android:layout_width="327dp"
+        android:layout_height="655dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/lbWaiting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="30dp"
+                android:text="¡Estamos felices de tu entusiasmo por empezar!" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="17dp" />
+
+            <TextView
+                android:id="@+id/lbWaiting2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textAlignment="center"
+                android:text="Sin embargo, tienes que esperar un poquito más a que se acepten tus documentos" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,6 +15,12 @@
         android:theme="@style/Theme.Elearning"
         tools:targetApi="31">
         <activity
+            android:name=".RegisterTeacher"
+            android:exported="false" />
+        <activity
+            android:name=".Browse"
+            android:exported="false" />
+        <activity
             android:name=".Profile"
             android:exported="false" />
         <activity
