@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
+import android.icu.text.MessagePattern.ApostropheMode
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -39,8 +40,8 @@ class RegisterTeacher : AppCompatActivity()
     private var RETURN_VALUE_BUTTON = 0
     private val VALUE_TEXTVIEW = "TextView"
     private lateinit var progressBar: ProgressBar
-    private lateinit var curpFile: File
-    private lateinit var currencyFile: File
+    private lateinit var curpFile: Uri
+    private lateinit var currencyFile: Uri
 
     //containers
     private lateinit var scrViewRegisterTeacher: ScrollView
@@ -117,7 +118,7 @@ class RegisterTeacher : AppCompatActivity()
     {
         RETURN_VALUE_BUTTON = 1
 
-        val vtnChooseDocument: Intent = Intent(Intent.ACTION_GET_CONTENT)
+        val vtnChooseDocument = Intent(Intent.ACTION_GET_CONTENT)
         vtnChooseDocument.type = "application/pdf"
         startActivityForResult(Intent.createChooser(vtnChooseDocument, "Selecciona tu archivo: "), RETURN_VALUE)
     }
@@ -126,7 +127,7 @@ class RegisterTeacher : AppCompatActivity()
     {
         RETURN_VALUE_BUTTON = 2
 
-        val vtnChooseDocument: Intent = Intent(Intent.ACTION_GET_CONTENT)
+        val vtnChooseDocument = Intent(Intent.ACTION_GET_CONTENT)
         vtnChooseDocument.type = "application/pdf"
         startActivityForResult(Intent.createChooser(vtnChooseDocument, "Selecciona tu archivo: "), RETURN_VALUE)
     }
@@ -139,28 +140,25 @@ class RegisterTeacher : AppCompatActivity()
         {
 
         }
-        if((resultCode == RESULT_OK) && (requestCode == RETURN_VALUE))
+        if (requestCode == RETURN_VALUE && resultCode == RESULT_OK && data != null && data.data != null)
         {
-            val path = data?.data
+            val path: Uri = data.data!!
+            val file = File(path.toString())
+            val fileName = file.name
 
-            if(path != null)
+            when(RETURN_VALUE_BUTTON)
             {
-                val file = File(path.path)
-                val fileName = file.name
+                1 ->{
+                    //Toast.makeText(this, " "+path, Toast.LENGTH_LONG).show()
+                    curpPDF.visibility = View.VISIBLE
+                    curpPDF.text = fileName.toString()
+                    curpFile = path
+                }
 
-                when(RETURN_VALUE_BUTTON)
-                {
-                    1 ->{
-                        curpPDF.visibility = View.VISIBLE
-                        curpPDF.text = fileName.toString()
-                        curpFile = file
-                    }
-
-                    2 ->{
-                        currencyPDF.visibility = View.VISIBLE
-                        currencyPDF.text = fileName.toString()
-                        currencyFile = file
-                    }
+                2 ->{
+                    currencyPDF.visibility = View.VISIBLE
+                    currencyPDF.text = fileName.toString()
+                    currencyFile = path
                 }
             }
         }
@@ -228,24 +226,21 @@ class RegisterTeacher : AppCompatActivity()
         }
     }
 
-    public fun uploadDocument(document: File, nameFile: String?, teacherName: String?, email: String?): String?
+    public fun uploadDocument(document: Uri, nameFile: String?, teacherName: String?, email: String?): String?
     {
         var path: String? = null
-        val actualDate = Date()
-        val format = SimpleDateFormat("yyyy_MM_dd")
-        val date = format.format(actualDate)
-        val fileName = teacherName + "_" + nameFile
-        val reference = "teachers/$teacherName/documents/$fileName"
+        val storage = FirebaseStorage.getInstance()
+        val storageReference = storage.reference
+        val reference = "teachers/$teacherName/documents/" + System.currentTimeMillis().toString() + nameFile + ".pdf"
+        val fileReference = storageReference.child(reference)
 
-        var storageReference = FirebaseStorage.getInstance().getReference(reference)
-        storageReference.putFile(Uri.fromFile(document))
+        fileReference.putFile(document)
             .addOnSuccessListener {
                 path = reference
             }
-            .addOnFailureListener{
-                Toast.makeText(this, "No se pudo subir tu archivo " + reference, Toast.LENGTH_SHORT).show()
+            .addOnFailureListener{exception->
+                Toast.makeText(this, "Error al subir el archivo: ${exception.message}", Toast.LENGTH_LONG).show()
             }
-
         return path
     }
 }
