@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav_header"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:background="@color/resourcesApp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:elevation="5dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:id="@+id/nav_header_imageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/admin_img"/>
+
+    <TextView
+        android:id="@+id/txtNameAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Administrador"
+        android:textSize="30dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+
+</LinearLayout>

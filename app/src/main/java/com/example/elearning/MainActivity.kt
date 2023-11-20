@@ -26,6 +26,11 @@ class MainActivity : AppCompatActivity()
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        toolbar.setOnClickListener{
+            val vtnMain = Intent(this, MainActivity::class.java)
+            startActivity(vtnMain)
+        }
     }
 
     override public fun onCreateOptionsMenu(menu: Menu?): Boolean
@@ -38,14 +43,25 @@ class MainActivity : AppCompatActivity()
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         val validate = sharedPreferences.getString("emailUser", "")
+        val validateType = sharedPreferences.getString("typeUser", "")
 
         when(item.itemId)
         {
             R.id.btnUser ->{
                 if(!validate.isNullOrBlank())
                 {
-                    val vtnProfile = Intent(this, Profile::class.java)
-                    startActivity(vtnProfile)
+                    when(validateType)
+                    {
+                        "1" -> {
+                            val vtnAdmin = Intent(this, Admin::class.java)
+                            startActivity(vtnAdmin)
+                        }
+
+                        else -> {
+                            val vtnProfile = Intent(this, Profile::class.java)
+                            startActivity(vtnProfile)
+                        }
+                    }
                 }
                 else
                 {

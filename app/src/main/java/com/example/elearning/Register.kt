@@ -51,6 +51,11 @@ class Register : AppCompatActivity()
         email = findViewById(R.id.bxEmailRegister)
         mainPassword = findViewById(R.id.bxMainPasswordRegister)
         repeatPassword = findViewById(R.id.bxRepeatPasswordRegister)
+
+        toolbar.setOnClickListener{
+            val vtnMain = Intent(this, MainActivity::class.java)
+            startActivity(vtnMain)
+        }
     }
 
     override public fun onCreateOptionsMenu(menu: Menu?): Boolean
@@ -63,14 +68,25 @@ class Register : AppCompatActivity()
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         val validate = sharedPreferences.getString("emailUser", "")
+        val validateType = sharedPreferences.getString("typeUser", "")
 
         when(item.itemId)
         {
             R.id.btnUser ->{
                 if(!validate.isNullOrBlank())
                 {
-                    val vtnProfile = Intent(this, Profile::class.java)
-                    startActivity(vtnProfile)
+                    when(validateType)
+                    {
+                        "1" -> {
+                            val vtnAdmin = Intent(this, Admin::class.java)
+                            startActivity(vtnAdmin)
+                        }
+
+                        else -> {
+                            val vtnProfile = Intent(this, Profile::class.java)
+                            startActivity(vtnProfile)
+                        }
+                    }
                 }
                 else
                 {
@@ -86,7 +102,7 @@ class Register : AppCompatActivity()
     {
         var res: functions = functions()
 
-        val typeUser: Int = 1
+        val typeUser: Int = 2
         var nameRegister = name.text.toString()
         var pSurNameRegister = pSurName.text.toString()
         var mSurNameRegister = mSurName.text.toString()

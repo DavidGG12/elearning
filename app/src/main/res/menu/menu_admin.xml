@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item android:id="@+id/adminRegister"
+            android:icon="@drawable/agregar_usuario"
+            android:title="Registro de Usuarios"/>
+        <item android:id="@+id/adminTable"
+            android:icon="@drawable/administrador"
+            android:title="Administradores"/>
+        <item android:id="@+id/usersTable"
+            android:icon="@drawable/usuario_18"
+            android:title="Usuarios"/>
+        <item android:id="@+id/teachersTable"
+            android:icon="@drawable/teachers_2"
+            android:title="Profesores"/>
+        <item android:id="@+id/teachersDocuments"
+            android:icon="@drawable/documento"
+            android:title="Solicitudes Profesores"/>
+        <item android:id="@+id/categoryRegisterView"
+            android:icon="@drawable/mas"
+            android:title="Nueva Categoría"/>
+        <item android:id="@+id/subcategoryRegisterView"
+            android:icon="@drawable/mas"
+            android:title="Nueva Subcategoría"/>
+        <item android:id="@+id/sealsTickets"
+            android:icon="@drawable/carrito_de_compras_18"
+            android:title="Compras"/>
+        <item android:id="@+id/profile"
+            android:icon="@drawable/editar"
+            android:title="Perfil"/>
+    </group>
+</menu>

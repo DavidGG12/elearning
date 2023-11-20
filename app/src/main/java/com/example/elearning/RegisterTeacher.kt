@@ -42,6 +42,7 @@ class RegisterTeacher : AppCompatActivity()
     private lateinit var progressBar: ProgressBar
     private lateinit var curpFile: Uri
     private lateinit var currencyFile: Uri
+    private lateinit var arrayPaths: MutableList<String>
 
     //containers
     private lateinit var scrViewRegisterTeacher: ScrollView
@@ -62,6 +63,8 @@ class RegisterTeacher : AppCompatActivity()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_teacher)
+
+        arrayPaths = mutableListOf("")
 
         sharedPreferences = getSharedPreferences("Session", Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
@@ -86,6 +89,18 @@ class RegisterTeacher : AppCompatActivity()
         currencyPDF = findViewById(R.id.lbCurrencyNameDocument)
         lada = findViewById(R.id.txtLada)
         phoneNumber = findViewById(R.id.txtPhoneNumber)
+
+        val validateRegister = sharedPreferences.getString("idInformationUser", "")
+        if(!validateRegister.isNullOrBlank())
+        {
+            scrViewRegisterTeacher.visibility = View.GONE
+            scrViewWaitingResponse.visibility = View.VISIBLE
+        }
+
+        toolbar.setOnClickListener{
+            val vtnMain = Intent(this, MainActivity::class.java)
+            startActivity(vtnMain)
+        }
     }
 
     override public fun onCreateOptionsMenu(menu: Menu?): Boolean
@@ -98,13 +113,28 @@ class RegisterTeacher : AppCompatActivity()
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         val validate = sharedPreferences.getString("emailUser", "")
+        val validateType = sharedPreferences.getString("typeUser", "")
 
-        when (item.itemId) {
-            R.id.btnUser -> {
-                if (!validate.isNullOrBlank()) {
-                    val vtnProfile = Intent(this, Profile::class.java)
-                    startActivity(vtnProfile)
-                } else {
+        when(item.itemId)
+        {
+            R.id.btnUser ->{
+                if(!validate.isNullOrBlank())
+                {
+                    when(validateType)
+                    {
+                        "1" -> {
+                            val vtnAdmin = Intent(this, Admin::class.java)
+                            startActivity(vtnAdmin)
+                        }
+
+                        else -> {
+                            val vtnProfile = Intent(this, Profile::class.java)
+                            startActivity(vtnProfile)
+                        }
+                    }
+                }
+                else
+                {
                     val intent = Intent(this, Login::class.java)
                     startActivity(intent)
                 }
@@ -188,59 +218,55 @@ class RegisterTeacher : AppCompatActivity()
             scrViewRegisterTeacher.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
 
-            val uploadCurp = uploadDocument(curpFile, curpPDF.text.toString(), nameTeacher, emailTeacher)
-            val uploadCurrency = uploadDocument(currencyFile, currencyPDF.text.toString(), nameTeacher, emailTeacher)
+            uploadDocument(curpFile, curpPDF.text.toString(), nameTeacher, emailTeacher)
+            uploadDocument(currencyFile, currencyPDF.text.toString(), nameTeacher, emailTeacher)
 
-            if(uploadCurp.isNullOrBlank() || uploadCurrency.isNullOrBlank())
+            val uploadCurp = "teachers/$emailTeacher/documents/"
+            val uploadCurrency = "teachers/$emailTeacher/documents/"
+
+            try
             {
-                Toast.makeText(this, uploadCurp + " " + uploadCurrency, Toast.LENGTH_SHORT).show()
+                val newRowId = db.insert("INFORMATION", null, ContentValues().apply {
+                    put("RUTH_CURP", uploadCurp)
+                    put("RUTH_CURRENCY", uploadCurrency)
+                    put("LADA", ladaRegister)
+                    put("PHONE_NUMBER", phoneNumber)
+                })
+
+                val queryUserUploadInformation = "UPDATE USER SET INFORMATION_USER = ? WHERE EMAIL = ? AND NUSER = ?"
+                val valuesUpload = arrayOf(newRowId, emailTeacher, nameTeacher)
+
+                db.execSQL(queryUserUploadInformation, valuesUpload)
+
+                editor.putString("idInformationUser", newRowId.toString())
+                editor.apply()
+
+                progressBar.visibility = View.GONE
+                scrViewSuccess.visibility = View.VISIBLE
+            }
+            catch (e: SQLException)
+            {
+                Toast.makeText(this, "Algo salió mal (db)", Toast.LENGTH_SHORT).show()
                 progressBar.visibility = View.GONE
                 scrViewRegisterTeacher.visibility = View.VISIBLE
-            }
-            else
-            {
-                try
-                {
-                    val newRowId = db.insert("INFORMATION", null, ContentValues().apply {
-                        put("RUTH_CURP", uploadCurp)
-                        put("RUTH_CURRENCY", uploadCurrency)
-                        put("LADA", ladaRegister)
-                        put("PHONE_NUMBER", phoneNumber)
-                    })
-
-                    val queryUserUploadInformation = "UPDATE USER SET INFORMATION_USER = ? WHERE EMAIL = ? AND NUSER = ?"
-                    val valuesUpload = arrayOf(newRowId, emailTeacher, nameTeacher)
-
-                    db.execSQL(queryUserUploadInformation, valuesUpload)
-
-                    progressBar.visibility = View.GONE
-                    scrViewSuccess.visibility = View.VISIBLE
-                }
-                catch (e: SQLException)
-                {
-                    Toast.makeText(this, "Algo salió mal (db)", Toast.LENGTH_SHORT).show()
-                    progressBar.visibility = View.GONE
-                    scrViewRegisterTeacher.visibility = View.VISIBLE
-                }
             }
         }
     }
 
-    public fun uploadDocument(document: Uri, nameFile: String?, teacherName: String?, email: String?): String?
+    public fun uploadDocument(document: Uri, nameFile: String?, teacherName: String?, email: String?)
     {
         var path: String? = null
         val storage = FirebaseStorage.getInstance()
         val storageReference = storage.reference
-        val reference = "teachers/$teacherName/documents/" + System.currentTimeMillis().toString() + nameFile + ".pdf"
+        val reference = "teachers/$email/documents/" + System.currentTimeMillis().toString() + nameFile + ".pdf"
         val fileReference = storageReference.child(reference)
 
         fileReference.putFile(document)
             .addOnSuccessListener {
-                path = reference
+
             }
             .addOnFailureListener{exception->
                 Toast.makeText(this, "Error al subir el archivo: ${exception.message}", Toast.LENGTH_LONG).show()
             }
-        return path
     }
 }

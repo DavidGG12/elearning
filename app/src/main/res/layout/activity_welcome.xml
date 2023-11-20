@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ScrollView
+        android:layout_width="292dp"
+        android:layout_height="581dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/lbWelcomeAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="¡Bienvenido!"
+                android:textAlignment="center"
+                android:layout_marginBottom="30dp"
+                android:textSize="30dp" />
+
+            <TextView
+                android:id="@+id/lbWelcomeAdmin2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:textAlignment="center"
+                android:textSize="20dp"
+                android:text="Este es el panel de los administradores, aquí puedes realizar diferentes consultas." />
+
+            <ImageView
+                android:id="@+id/logoView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                app:srcCompat="@drawable/logo" />
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
