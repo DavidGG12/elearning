@@ -16,7 +16,7 @@
         <item android:id="@+id/teachersDocuments"
             android:icon="@drawable/documento"
             android:title="Solicitudes Profesores"/>
-        <item android:id="@+id/categoryRegisterView"
+        <item android:id="@+id/categoryRegister"
             android:icon="@drawable/mas"
             android:title="Nueva Categoría"/>
         <item android:id="@+id/subcategoryRegisterView"

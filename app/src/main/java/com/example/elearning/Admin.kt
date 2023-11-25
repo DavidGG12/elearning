@@ -1,33 +1,31 @@
 package com.example.elearning
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.ScrollView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.DrawerLayoutUtils
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
-import org.w3c.dom.Text
 import java.sql.SQLException
+import kotlin.properties.Delegates
 
 class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 {
@@ -56,9 +54,30 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
     //Users View
     private lateinit var usersTableView: ConstraintLayout
     //Resources of the Users View
-    private lateinit var lbNoFound: TextView
+    private lateinit var lbNoFoundUser: TextView
     private lateinit var listViewUsers: ListView
 
+    //Category View
+    private lateinit var categoryView: ConstraintLayout
+    //Resources of the Category View
+    private lateinit var txtCategory: EditText
+    private lateinit var listViewCategory: ListView
+    private lateinit var lbNoFoundCategory: TextView
+    private lateinit var btnRegisterCategory: Button
+    private var ID_UPDATE_CATEGORY by Delegates.notNull<String>()
+    private var VALUE_REGISTER_UPDATE_CATEGORY: Int = 1
+
+    //Subcategory View
+    private lateinit var subcategoryView: ConstraintLayout
+    //Resources of the Subcategory View
+    private lateinit var txtSubcategory: EditText
+    private lateinit var spnrCategory: Spinner
+    private lateinit var lbNoFoundsSubcategory: TextView
+    private lateinit var tableSubcategories: ListView
+    private lateinit var btnRegisterSubcategory: Button
+    private lateinit var ID_CATEGORY_SELECT: String
+    private lateinit var ID_UPDATE_SUBCATEGORY: String
+    private var VALUE_REGISTER_UPDATE_SUBCATEGORY: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -101,8 +120,26 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
         //Users View
         usersTableView = findViewById(R.id.usersView)
         //Resources of the Users View
-        lbNoFound = findViewById(R.id.lbNoFounds)
+        lbNoFoundUser = findViewById(R.id.lbNoFounds)
         listViewUsers = findViewById(R.id.tableUsers)
+
+        //Category View
+        categoryView = findViewById(R.id.categoryRegisterView)
+        //Resources of the Category View
+        lbNoFoundCategory = findViewById(R.id.lbNoFoundsCategory)
+        txtCategory = findViewById(R.id.txtCategory)
+        listViewCategory = findViewById(R.id.tableCategories)
+        btnRegisterCategory = findViewById(R.id.btnRegisterCategory)
+
+        //Subcategory View
+        subcategoryView = findViewById(R.id.subcategoryRegisterView)
+        //Resources of the Subcategory View
+        txtSubcategory = findViewById(R.id.txtSubCategory)
+        spnrCategory = findViewById(R.id.spnrCategory)
+        lbNoFoundsSubcategory = findViewById(R.id.lbNoFoundsSubCategory)
+        tableSubcategories = findViewById(R.id.tableSubCategories)
+        btnRegisterSubcategory = findViewById(R.id.btnRegisterSubCategory)
+        //Fill the spinner with the values in the table Category
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean
@@ -112,12 +149,16 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
             R.id.adminRegister ->{
                 welcomeView.visibility = View.GONE
                 usersTableView.visibility = View.GONE
+                categoryView.visibility = View.GONE
+                subcategoryView.visibility = View.GONE
                 registerView.visibility = View.VISIBLE
             }
 
             R.id.adminTable ->{
                 welcomeView.visibility = View.GONE
                 registerView.visibility = View.GONE
+                categoryView.visibility = View.GONE
+                subcategoryView.visibility = View.GONE
                 tableUsers(typeUser = "1")
                 usersTableView.visibility = View.VISIBLE
             }
@@ -125,6 +166,8 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
             R.id.usersTable ->{
                 welcomeView.visibility = View.GONE
                 registerView.visibility = View.GONE
+                categoryView.visibility = View.GONE
+                subcategoryView.visibility = View.GONE
                 tableUsers(typeUser = "2")
                 usersTableView.visibility = View.VISIBLE
             }
@@ -132,15 +175,31 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
             R.id.teachersTable -> {
                 welcomeView.visibility = View.GONE
                 registerView.visibility = View.GONE
+                categoryView.visibility = View.GONE
+                subcategoryView.visibility = View.GONE
                 tableUsers(typeUser = "3")
                 usersTableView.visibility = View.VISIBLE
             }
 
             R.id.teachersDocuments -> Toast.makeText(this, "Item 2", Toast.LENGTH_SHORT).show()
 
-            R.id.categoryRegisterView -> Toast.makeText(this, "Item 2", Toast.LENGTH_SHORT).show()
+            R.id.categoryRegister -> {
+                welcomeView.visibility = View.GONE
+                registerView.visibility = View.GONE
+                usersTableView.visibility = View.GONE
+                subcategoryView.visibility = View.GONE
+                categoryView.visibility = View.VISIBLE
+                tableCategory()
+            }
 
-            R.id.subcategoryRegisterView -> Toast.makeText(this, "Item 2", Toast.LENGTH_SHORT).show()
+            R.id.subcategoryRegisterView -> {
+                welcomeView.visibility = View.GONE
+                registerView.visibility = View.GONE
+                usersTableView.visibility = View.GONE
+                categoryView.visibility = View.GONE
+                subcategoryView.visibility = View.VISIBLE
+                fillSpnrCategory()
+            }
 
             R.id.sealsTickets -> Toast.makeText(this, "Item 2", Toast.LENGTH_SHORT).show()
 
@@ -176,6 +235,8 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
         return super.onOptionsItemSelected(item)
     }
 
+
+    //Function to register an admin
     public fun register(v: View)
     {
         var res: functions = functions()
@@ -222,9 +283,9 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
         }
     }
 
-
+    //Function to show the tables of the administrators, users and teachers
     @SuppressLint("Range")
-    fun tableUsers(typeUser: String)
+    private fun tableUsers(typeUser: String)
     {
         //List where we save all the users
         var users = mutableListOf<User>()
@@ -275,11 +336,12 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
         else
         {
             listViewUsers.visibility = View.GONE
-            lbNoFound.visibility = View.VISIBLE
+            lbNoFoundUser.visibility = View.VISIBLE
         }
     }
 
-    fun deleteUser(id: String, typeUser: String)
+    //Function that the function "tableUsers" call to delete an user when the administrator click a register of the table
+    private fun deleteUser(id: String, typeUser: String)
     {
         val query_delete = "DELETE FROM USER WHERE ID_USER = ?"
         val clause_delete = arrayOf(id)
@@ -295,4 +357,195 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
             Toast.makeText(this, "Algo ocurrió", Toast.LENGTH_SHORT).show()
         }
     }
+
+    //Function to show the table Category
+    @SuppressLint("Range")
+    private fun tableCategory()
+    {
+        var categories = mutableListOf<Categories_Subcategories>()
+        //query
+        val query = "SELECT ID_CATEGORY, NCATEGORY FROM CATEGORY"
+
+        val cursor: Cursor = db.rawQuery(query, null)
+
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                val idCategory = cursor.getInt(cursor.getColumnIndex("ID_CATEGORY"))
+                val nCategory = cursor.getString(cursor.getColumnIndex("NCATEGORY"))
+                val category = Categories_Subcategories(idCategory, nCategory)
+                categories.add(category)
+            }while(cursor.moveToNext())
+
+            cursor.close()
+
+            val adapter = CategoryAdapter(this, R.layout.users_table, categories)
+            listViewCategory.adapter = adapter
+            listViewCategory.visibility = View.VISIBLE
+            lbNoFoundCategory.visibility = View.GONE
+
+            listViewCategory.setOnItemClickListener{_, _, position, _ ->
+                val clickedCategory = categories[position]
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Categorías")
+                builder.setMessage("¿Deseeas eliminar o actualizar esta categoría?")
+                builder.setNeutralButton("Eliminar") { dialog, _ ->
+                    deleteCategory(clickedCategory.idCategory.toString())
+                }
+                builder.setPositiveButton("Actualizar") { dialog, _ ->
+                    btnRegisterCategory.text = "Actualizar"
+                    VALUE_REGISTER_UPDATE_CATEGORY = 2
+                    ID_UPDATE_CATEGORY = clickedCategory.idCategory.toString()
+                }
+                builder.setNegativeButton("Cancelar") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                val dialog = builder.create()
+                dialog.show()
+            }
+        }
+        else
+        {
+            listViewCategory.visibility = View.GONE
+            lbNoFoundCategory.visibility = View.VISIBLE
+        }
+    }
+
+    fun addCategory(v: View)
+    {
+        try
+        {
+            if(VALUE_REGISTER_UPDATE_CATEGORY == 1 && !txtCategory.text.toString().isNullOrBlank())
+            {
+                val txtAddCategory = txtCategory.text.toString()
+                val query = "INSERT INTO CATEGORY(NCATEGORY) VALUES (?)"
+                val values = arrayOf(txtAddCategory)
+                db.execSQL(query, values)
+                Toast.makeText(this, "Registrado", Toast.LENGTH_SHORT).show()
+                txtCategory.text = null
+
+                tableCategory()
+            }
+            else if(VALUE_REGISTER_UPDATE_CATEGORY == 2 && !txtCategory.text.toString().isNullOrBlank())
+            {
+                val txtAddCategory = txtCategory.text.toString()
+                val query = "UPDATE CATEGORY SET NCATEGORY = ? WHERE ID_CATEGORY = ?"
+                val values = arrayOf(txtAddCategory, ID_UPDATE_CATEGORY)
+                db.execSQL(query, values)
+                Toast.makeText(this, "Actualizado", Toast.LENGTH_SHORT).show()
+                btnRegisterCategory.text = "Registrar"
+                VALUE_REGISTER_UPDATE_CATEGORY = 1
+                txtCategory.text = null
+
+                tableCategory()
+            }
+            else
+            {
+                Toast.makeText(this, "Tienes que escribir una categoría", Toast.LENGTH_SHORT).show()
+            }
+        }
+        catch (e: SQLException)
+        {
+            Toast.makeText(this, "Algo salió mal", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun deleteCategory(idCategory: String)
+    {
+        val query_deleteCategory = "DELETE FROM CATEGORY WHERE ID_CATEGORY = ?"
+        val clauses_deleteCategory = arrayOf(idCategory)
+
+        try
+        {
+            db.execSQL(query_deleteCategory, clauses_deleteCategory)
+            tableCategory()
+            Toast.makeText(this, "Eliminado", Toast.LENGTH_SHORT).show()
+        }
+        catch (e: SQLException)
+        {
+            Toast.makeText(this, "Algo salió mal al eliminarlo", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    @SuppressLint("Range")
+    private fun fillSpnrCategory()
+    {
+        var categoriesList = mutableListOf<String>()
+        val queryFill = "SELECT NCATEGORY FROM CATEGORY"
+        val cursor: Cursor = db.rawQuery(queryFill, null)
+
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                val nCategory = cursor.getString(cursor.getColumnIndex("NCATEGORY"))
+                categoriesList.add(nCategory)
+            }while (cursor.moveToNext())
+
+            val adapter: ArrayAdapter<String> =
+                ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, categoriesList)
+
+            spnrCategory.adapter = adapter
+            spnrCategory.onItemSelectedListener = object: AdapterView.OnItemSelectedListener
+            {
+                override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: View?, position: Int, id: Long)
+                {
+                    var selectedItemActions = parentView?.getItemAtPosition(position).toString()
+
+                    val query_RegisterFill = "SELECT ID_CATEGORY FROM CATEGORY WHERE NCATEGORY = ?"
+                    val values_RegisterFill = arrayOf(selectedItemActions)
+                    val cursor_ItemSelected: Cursor = db.rawQuery(query_RegisterFill, values_RegisterFill)
+
+                    if(cursor.moveToFirst())
+                    {
+                        ID_CATEGORY_SELECT = cursor.getString(cursor.getColumnIndex("ID_CATEGORY"))
+                    }
+                    cursor_ItemSelected.close()
+                    tableSubcategory(ID_CATEGORY_SELECT)
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?)
+                {
+                    TODO("Not yet implemented")
+                }
+            }
+        }
+
+        cursor.close()
+    }
+
+    @SuppressLint("Range")
+    private fun tableSubcategory(idCategorySelected: String)
+    {
+        var subcategories = mutableListOf<Categories_Subcategories>()
+        //query
+        val query_tableSubcategories = "SELECT ID_SUBCATEGORY, NSUBCATEGORY FROM SUBCATEGORY WHERE CATEGORY_SUBCATEGORY = ?"
+        val values_tableSubcategories = arrayOf(idCategorySelected)
+
+        val cursor_tableSubcategories: Cursor = db.rawQuery(query_tableSubcategories, values_tableSubcategories)
+
+        if(cursor_tableSubcategories.moveToFirst())
+        {
+            do
+            {
+                val idSubcategory = cursor_tableSubcategories.getInt(cursor_tableSubcategories.getColumnIndex("ID_SUBCATEGORY"))
+                val nSubcategory = cursor_tableSubcategories.getString(cursor_tableSubcategories.getColumnIndex("NSUBCATEGORY"))
+                val subcategory = Categories_Subcategories(idSubcategory, nSubcategory)
+                subcategories.add(subcategory)
+            }while(cursor_tableSubcategories.moveToNext())
+
+            cursor_tableSubcategories.close()
+
+
+        }
+        else
+        {
+            tableSubcategories.visibility = View.GONE
+            lbNoFoundsSubcategory.visibility = View.GONE
+        }
+    }
 }
+
+
