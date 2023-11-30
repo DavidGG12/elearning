@@ -43,6 +43,7 @@
         android:id="@+id/categoryRegisterView"
         layout="@layout/category_register"
         android:visibility="gone"
+        android:layout_marginTop="50dp"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
@@ -53,6 +54,7 @@
     <include
         android:id="@+id/subcategoryRegisterView"
         layout="@layout/subcategory_register"
+        android:layout_marginTop="100dp"
         android:visibility="gone"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

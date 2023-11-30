@@ -49,10 +49,11 @@ class functions()
 }
 
 
-data class User(val id: Int, val email: String, val password: String)
+data class User(val id: Int, val email: String, val password: String?)
 
-class UserAdapter(context: Context, resource: Int, objects: List<User>): ArrayAdapter<User>(context, resource, objects)
+class UserAdapter(context: Context, resource: Int, objects: List<User>, flag: Boolean?): ArrayAdapter<User>(context, resource, objects)
 {
+    var flag = flag
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
     {
         val user = getItem(position)
@@ -64,9 +65,18 @@ class UserAdapter(context: Context, resource: Int, objects: List<User>): ArrayAd
         val textEmail: TextView = view.findViewById(R.id.txtViewEmail)
         val textPassword: TextView = view.findViewById(R.id.txtViewPassword)
 
-        textId.text = user?.id.toString()
-        textEmail.text = user?.email
-        textPassword.text = user?.password
+        if(flag == false)
+        {
+            textId.text = user?.id.toString()
+            textEmail.text = user?.email
+            textPassword.text = user?.password
+        }
+        else if(flag == true)
+        {
+            textId.text = user?.id.toString()
+            textEmail.text = user?.email
+            textPassword.text = "Pendiente"
+        }
 
         return view
     }
@@ -89,6 +99,25 @@ class CategoryAdapter(context: Context, resource: Int, objects: List<Categories_
         textId.text = user?.idCategory.toString()
         textEmail.text = user?.nCategory
         textPassword.visibility = View.GONE
+
+        return view
+    }
+}
+
+data class Documents_Teachers(val nDocument: String)
+
+class DocumentsAdapter(context: Context, resource: Int, objects: List<Documents_Teachers>): ArrayAdapter<Documents_Teachers>(context, resource, objects)
+{
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
+    {
+        val document = getItem(position)
+
+        val view: View = convertView
+            ?: LayoutInflater.from(context).inflate(R.layout.documents_table, parent, false)
+
+        val textName: TextView = view.findViewById(R.id.txtViewName)
+
+        textName.text = document?.nDocument
 
         return view
     }

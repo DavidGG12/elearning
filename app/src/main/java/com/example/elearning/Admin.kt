@@ -1,7 +1,9 @@
 package com.example.elearning
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -56,6 +58,9 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
     //Resources of the Users View
     private lateinit var lbNoFoundUser: TextView
     private lateinit var listViewUsers: ListView
+    //An other shared preference to save the email of the teacher that we want to see their documents
+    private lateinit var sharedPreferences_Pending: SharedPreferences
+    private lateinit var editor_Pending: SharedPreferences.Editor
 
     //Category View
     private lateinit var categoryView: ConstraintLayout
@@ -122,6 +127,9 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
         //Resources of the Users View
         lbNoFoundUser = findViewById(R.id.lbNoFounds)
         listViewUsers = findViewById(R.id.tableUsers)
+        //Init of the shared preference
+        sharedPreferences_Pending = getSharedPreferences("TeacherPending", Context.MODE_PRIVATE)
+        editor_Pending = sharedPreferences_Pending.edit()
 
         //Category View
         categoryView = findViewById(R.id.categoryRegisterView)
@@ -159,7 +167,7 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
                 registerView.visibility = View.GONE
                 categoryView.visibility = View.GONE
                 subcategoryView.visibility = View.GONE
-                tableUsers(typeUser = "1")
+                tableUsers(typeUser = "1", false)
                 usersTableView.visibility = View.VISIBLE
             }
 
@@ -168,7 +176,7 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
                 registerView.visibility = View.GONE
                 categoryView.visibility = View.GONE
                 subcategoryView.visibility = View.GONE
-                tableUsers(typeUser = "2")
+                tableUsers(typeUser = "2", false)
                 usersTableView.visibility = View.VISIBLE
             }
 
@@ -177,11 +185,18 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
                 registerView.visibility = View.GONE
                 categoryView.visibility = View.GONE
                 subcategoryView.visibility = View.GONE
-                tableUsers(typeUser = "3")
+                tableUsers(typeUser = "3", false)
                 usersTableView.visibility = View.VISIBLE
             }
 
-            R.id.teachersDocuments -> Toast.makeText(this, "Item 2", Toast.LENGTH_SHORT).show()
+            R.id.teachersDocuments -> {
+                welcomeView.visibility = View.GONE
+                registerView.visibility = View.GONE
+                categoryView.visibility = View.GONE
+                subcategoryView.visibility = View.GONE
+                tableUsers(typeUser = "2", true)
+                usersTableView.visibility = View.VISIBLE
+            }
 
             R.id.categoryRegister -> {
                 welcomeView.visibility = View.GONE
@@ -285,58 +300,105 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
 
     //Function to show the tables of the administrators, users and teachers
     @SuppressLint("Range")
-    private fun tableUsers(typeUser: String)
+    private fun tableUsers(typeUser: String, flag: Boolean?)
     {
-        //List where we save all the users
-        var users = mutableListOf<User>()
-
-        //Query
-        val query = "SELECT ID_USER, EMAIL, PASSWORD FROM USER WHERE TYPE_USER_USER = ?"
-        val clauses = arrayOf(typeUser)
-
-        val cursor: Cursor = db.rawQuery(query, clauses)
-
-        if(cursor.moveToFirst())
+        if(flag == false)
         {
-            do
+            //List where we save all the users
+            var users = mutableListOf<User>()
+
+            //Query
+            val query = "SELECT ID_USER, EMAIL, PASSWORD FROM USER WHERE TYPE_USER_USER = ?"
+            val clauses = arrayOf(typeUser)
+
+            val cursor: Cursor = db.rawQuery(query, clauses)
+
+            if(cursor.moveToFirst())
             {
-                val id = cursor.getInt(cursor.getColumnIndex("ID_USER"))
-                val email = cursor.getString(cursor.getColumnIndex("EMAIL"))
-                val password = cursor.getString(cursor.getColumnIndex("PASSWORD"))
-
-                val user = User(id, email, password)
-                users.add(user)
-            } while (cursor.moveToNext())
-
-            cursor.close()
-
-            //val listViewUsers: ListView = findViewById(R.id.tableUsers)
-            val adapter = UserAdapter(this, R.layout.users_table, users)
-            listViewUsers.adapter = adapter
-
-            listViewUsers.setOnItemClickListener { _, _, position, _ ->
-                val clickedUser = users[position]
-                //Toast.makeText(this, "Email: ${clickedUser.email}", Toast.LENGTH_SHORT).show()
-                if(clickedUser.id.toString() != "1")
+                listViewUsers.visibility = View.VISIBLE
+                lbNoFoundUser.visibility = View.GONE
+                do
                 {
-                    val builder = AlertDialog.Builder(this)
-                    builder.setTitle("Eliminar")
-                    builder.setMessage("¿Deseeas eliminar a este usuario?")
-                    builder.setPositiveButton("Aceptar") { dialog, _ ->
-                        deleteUser(clickedUser.id.toString(), typeUser)
+                    val id = cursor.getInt(cursor.getColumnIndex("ID_USER"))
+                    val email = cursor.getString(cursor.getColumnIndex("EMAIL"))
+                    val password = cursor.getString(cursor.getColumnIndex("PASSWORD"))
+
+                    val user = User(id, email, password)
+                    users.add(user)
+                } while (cursor.moveToNext())
+
+                cursor.close()
+
+                //val listViewUsers: ListView = findViewById(R.id.tableUsers)
+                val adapter = UserAdapter(this, R.layout.users_table, users, false)
+                listViewUsers.adapter = adapter
+
+                listViewUsers.setOnItemClickListener { _, _, position, _ ->
+                    val clickedUser = users[position]
+                    //Toast.makeText(this, "Email: ${clickedUser.email}", Toast.LENGTH_SHORT).show()
+                    if(clickedUser.id.toString() != "1")
+                    {
+                        val builder = AlertDialog.Builder(this)
+                        builder.setTitle("Eliminar")
+                        builder.setMessage("¿Deseeas eliminar a este usuario?")
+                        builder.setPositiveButton("Aceptar") { dialog, _ ->
+                            deleteUser(clickedUser.id.toString(), typeUser)
+                        }
+                        builder.setNegativeButton("Cancelar") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        val dialog = builder.create()
+                        dialog.show()
                     }
-                    builder.setNegativeButton("Cancelar") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    val dialog = builder.create()
-                    dialog.show()
                 }
             }
+            else
+            {
+                listViewUsers.visibility = View.GONE
+                lbNoFoundUser.visibility = View.VISIBLE
+            }
         }
-        else
+        else if(flag == true)
         {
-            listViewUsers.visibility = View.GONE
-            lbNoFoundUser.visibility = View.VISIBLE
+            var teachersPending = mutableListOf<User>()
+
+            val queryPending = "SELECT ID_USER, EMAIL FROM USER WHERE TYPE_USER_USER = ? AND INFORMATION_USER != ?"
+            val values = arrayOf(typeUser, "NULL")
+            val cursorPending: Cursor = db.rawQuery(queryPending, values)
+
+            if(cursorPending.moveToFirst())
+            {
+                listViewUsers.visibility = View.VISIBLE
+                lbNoFoundUser.visibility = View.GONE
+
+                do
+                {
+                    val id = cursorPending.getInt(cursorPending.getColumnIndex("ID_USER"))
+                    val email = cursorPending.getString(cursorPending.getColumnIndex("EMAIL"))
+
+                    val userPending = User(id, email, null)
+                    teachersPending.add(userPending)
+                }while(cursorPending.moveToNext())
+
+                cursorPending.close()
+
+                val adapterPending = UserAdapter(this, R.layout.users_table, teachersPending, true)
+                listViewUsers.adapter = adapterPending
+
+                listViewUsers.setOnItemClickListener{_, _, position, _ ->
+                    val clickedCategoryPending = teachersPending[position]
+                    var emailPutOnSharedPreference = clickedCategoryPending.email.toString()
+                    editor_Pending.putString("emailPending", emailPutOnSharedPreference)
+                    editor_Pending.apply()
+                    val vtnTeachersDocument = Intent(this, TeachersDocuments::class.java)
+                    startActivity(vtnTeachersDocument)
+                }
+            }
+            else
+            {
+                listViewUsers.visibility = View.GONE
+                lbNoFoundUser.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -349,7 +411,7 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
         try
         {
             db.execSQL(query_delete, clause_delete)
-            tableUsers(typeUser)
+            tableUsers(typeUser, false)
             Toast.makeText(this, "Eliminado", Toast.LENGTH_SHORT).show()
         }
         catch (e: SQLException)
@@ -498,9 +560,9 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
                     val values_RegisterFill = arrayOf(selectedItemActions)
                     val cursor_ItemSelected: Cursor = db.rawQuery(query_RegisterFill, values_RegisterFill)
 
-                    if(cursor.moveToFirst())
+                    if(cursor_ItemSelected.moveToFirst())
                     {
-                        ID_CATEGORY_SELECT = cursor.getString(cursor.getColumnIndex("ID_CATEGORY"))
+                        ID_CATEGORY_SELECT = cursor_ItemSelected.getString(cursor_ItemSelected.getColumnIndex("ID_CATEGORY"))
                     }
                     cursor_ItemSelected.close()
                     tableSubcategory(ID_CATEGORY_SELECT)
@@ -538,12 +600,86 @@ class Admin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListen
 
             cursor_tableSubcategories.close()
 
+            val adapterSubcategory = CategoryAdapter(this, R.layout.subcategory_register, subcategories)
+            tableSubcategories.adapter = adapterSubcategory
+            tableSubcategories.visibility = View.VISIBLE
+            lbNoFoundsSubcategory.visibility = View.GONE
 
+            tableSubcategories.setOnItemClickListener{_, _, position, _ ->
+                val clickedSubcategory = subcategories[position]
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Subcategorías")
+                builder.setMessage("¿Deseas eliminar o actualizar esta subcategoría?")
+                builder.setNeutralButton("Eliminar"){dialog, _ ->
+                    deleteSubcategory(clickedSubcategory.idCategory.toString())
+                }
+                builder.setPositiveButton("Actualizar"){dialog, _ ->
+                    btnRegisterSubcategory.text = "Actualizar"
+                    VALUE_REGISTER_UPDATE_SUBCATEGORY = 2
+                    ID_UPDATE_SUBCATEGORY = clickedSubcategory.idCategory.toString()
+                }
+                builder.setNegativeButton("Cancelar"){dialog, _ ->
+                    dialog.dismiss()
+                }
+                val dialog = builder.create()
+                dialog.show()
+            }
         }
         else
         {
             tableSubcategories.visibility = View.GONE
-            lbNoFoundsSubcategory.visibility = View.GONE
+            lbNoFoundsSubcategory.visibility = View.VISIBLE
+        }
+    }
+
+    fun addSubCategory(v: View)
+    {
+        try
+        {
+            if(VALUE_REGISTER_UPDATE_SUBCATEGORY == 1 && !txtSubcategory.text.toString().isNullOrBlank())
+            {
+                val txtAddSubcategory = txtSubcategory.text.toString()
+                val queryAddSubcategory = "INSERT INTO SUBCATEGORY(NSUBCATEGORY, CATEGORY_SUBCATEGORY) VALUES (?, ?)"
+                val valuesAddSubcategory = arrayOf(txtAddSubcategory, ID_CATEGORY_SELECT)
+                db.execSQL(queryAddSubcategory, valuesAddSubcategory)
+                Toast.makeText(this, "Registrado", Toast.LENGTH_SHORT).show()
+                txtSubcategory.text = null
+
+                tableSubcategory(ID_CATEGORY_SELECT)
+            }
+            else if(VALUE_REGISTER_UPDATE_SUBCATEGORY == 2 && !txtSubcategory.text.toString().isNullOrBlank())
+            {
+                val txtAddSubcategory = txtSubcategory.text.toString()
+                val queryUpdate = "UPDATE SUBCATEGORY SET NSUBCATEGORY = ? WHERE ID_SUBCATEGORY = ? AND CATEGORY_SUBCATEGORY = ?"
+                val valuesUpdate = arrayOf(txtAddSubcategory, ID_UPDATE_SUBCATEGORY, ID_CATEGORY_SELECT)
+                db.execSQL(queryUpdate, valuesUpdate)
+                Toast.makeText(this, "Actualizado", Toast.LENGTH_SHORT).show()
+                btnRegisterSubcategory.text = "Registrar"
+                VALUE_REGISTER_UPDATE_SUBCATEGORY = 1
+                txtSubcategory.text = null
+
+                tableSubcategory(ID_CATEGORY_SELECT)
+            }
+        }
+        catch (e: SQLException)
+        {
+            Toast.makeText(this, "Algo salió mal en el registro", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun deleteSubcategory(id: String)
+    {
+        val query_deleteSubcategory = "DELETE FROM SUBCATEGORY WHERE ID_SUBCATEGORY = ?"
+        val clause_deleteSubcategory = arrayOf(id)
+        try
+        {
+            db.execSQL(query_deleteSubcategory, clause_deleteSubcategory)
+            tableSubcategory(ID_CATEGORY_SELECT)
+            Toast.makeText(this, "Eliminado", Toast.LENGTH_SHORT).show()
+        }
+        catch (e: SQLException)
+        {
+            Toast.makeText(this, "No se pudo eliminar", Toast.LENGTH_SHORT).show()
         }
     }
 }
