@@ -269,7 +269,7 @@ class TeachersDocuments : AppCompatActivity()
             }
 
             val queryUpdateUser = "UPDATE USER SET INFORMATION_USER = ? WHERE EMAIL = ?"
-            val valuesUpdate = arrayOf("NULL", emailDeleteTeacher)
+            val valuesUpdate = arrayOf(null, emailDeleteTeacher)
             db.execSQL(queryUpdateUser, valuesUpdate)
 
             val queryDeleteInformation = "DELETE FROM INFORMATION WHERE ID_INFORMATION = ?"
@@ -277,6 +277,7 @@ class TeachersDocuments : AppCompatActivity()
             db.execSQL(queryDeleteInformation, valuesDelete)
 
             val pathDelete = "/teachers/${emailDeleteTeacher}/"
+            deleteDocuments(pathDelete)
             val pathReferenceToDelete = storageReference.child(pathDelete)
 
             pathReferenceToDelete.delete()
@@ -287,12 +288,38 @@ class TeachersDocuments : AppCompatActivity()
                     startActivity(vtnBackAdmin)
                 }
                 .addOnFailureListener{
-                    Toast.makeText(this, "Error al eliminar carpetas en firebase", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Profesor Denegado", Toast.LENGTH_SHORT).show()
+
+                    val vtnBackAdmin = Intent(this, Admin::class.java)
+                    startActivity(vtnBackAdmin)
                 }
         }
         catch (e: SQLException)
         {
             Toast.makeText(this, "Algo salió mal", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun deleteDocuments(path: String)
+    {
+        val deleteDocuments = storageReference.child(path).child("documents/")
+
+        deleteDocuments.listAll()
+            .addOnSuccessListener {result ->
+                for(file in result.items)
+                {
+                    file.delete()
+                        .addOnSuccessListener {
+
+                        }
+                        .addOnFailureListener{
+                            Toast.makeText(this, "No se pudieron eliminar los archivos", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                deleteDocuments.delete()
+            }
+            .addOnFailureListener{
+                Toast.makeText(this, "No se pudo acceder a la carpeta", Toast.LENGTH_SHORT).show()
+            }
     }
 }

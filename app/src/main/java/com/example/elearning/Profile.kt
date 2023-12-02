@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -28,11 +29,12 @@ class Profile : AppCompatActivity()
     private lateinit var txtWelcome: TextView
     private lateinit var txtEmail: TextView
     private lateinit var txtDescription: TextView
-    private lateinit var lbTeacherDescription: TextView
-    private lateinit var lbAddTeacher: TextView
     private lateinit var txtBxDescription: EditText
+
+
     private lateinit var spnrTeacherCourses: Spinner
     private lateinit var btnAddTeacher: Button
+    private lateinit var teacherRegisterResources: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,10 @@ class Profile : AppCompatActivity()
         txtDescription = findViewById(R.id.txtDescription)
         txtBxDescription = findViewById(R.id.txtBxDescription)
 
+        teacherRegisterResources = findViewById(R.id.teacherRegister)
+        spnrTeacherCourses = findViewById(R.id.spnrTeacher)
+        btnAddTeacher = findViewById(R.id.btnAddCourse)
+
         val valueDescription = sharedPreferences.getString("descriptionUser", "")
         val validateTeacher = sharedPreferences.getString("typeUser", "")
 
@@ -71,8 +77,7 @@ class Profile : AppCompatActivity()
 
         if(validateTeacher == "3")
         {
-            lbTeacherDescription.visibility = View.GONE
-            lbAddTeacher.visibility = View.GONE
+            teacherRegisterResources.visibility = View.GONE
             btnAddTeacher.visibility = View.VISIBLE
             spnrTeacherCourses.visibility = View.VISIBLE
         }
@@ -195,4 +200,9 @@ class Profile : AppCompatActivity()
         startActivity(vtnTeacherRegister)
     }
 
+    fun addCourse(v: View)
+    {
+        val vtnAddCourse = Intent(this, AddCourse::class.java)
+        startActivity(vtnAddCourse)
+    }
 }

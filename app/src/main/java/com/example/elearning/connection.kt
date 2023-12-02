@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class connection(context: Context): SQLiteOpenHelper(context, "elearning.db", null, 1)
+class connection(context: Context): SQLiteOpenHelper(context, "elearning.db", null, 2)
 {
     /*
     *
@@ -22,7 +22,9 @@ class connection(context: Context): SQLiteOpenHelper(context, "elearning.db", nu
     private final val TB_CONTENT = "CREATE TABLE CONTENT (\n" +
             "    ID_CONTENT INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
             "    NCONTENT TEXT NOT NULL,\n" +
-            "    RUTH_CONTENT TEXT NOT NULL\n" +
+            "    RUTH_CONTENT TEXT NOT NULL,\n" +
+            "    SECTION_CONTENT INTEGER NOT NULL,\n" +
+            "    FOREIGN KEY (SECTION_CONTENT) REFERENCES SECTION(ID_SECTION)" +
             ")"
 
     private final val TB_PAY_METHOD = "CREATE TABLE PAY_METHOD (\n" +
@@ -64,7 +66,7 @@ class connection(context: Context): SQLiteOpenHelper(context, "elearning.db", nu
             "    EMAIL TEXT NOT NULL UNIQUE,\n" +
             "    PASSWORD TEXT NOT NULL,\n" +
             "    DESCRIPTION TEXT,\n" +
-            "    METHOD_USER INTEGER NULL,\n" +
+            "    METHOD_USER INTEGER,\n" +
             "    TYPE_USER_USER INTEGER NOT NULL,\n" +
             "    INFORMATION_USER INTEGER UNIQUE,\n" +
             "    FOREIGN KEY (METHOD_USER) REFERENCES PAY_METHOD(ID_METHOD),\n" +
@@ -87,9 +89,7 @@ class connection(context: Context): SQLiteOpenHelper(context, "elearning.db", nu
             "    ID_SECTION INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
             "    NSECTION TEXT NOT NULL,\n" +
             "    COURSE_SECTION INTEGER NOT NULL,\n" +
-            "    CONTENT_SECTION INTEGER NOT NULL,\n" +
-            "    FOREIGN KEY (COURSE_SECTION) REFERENCES COURSE(ID_COURSE),\n" +
-            "    FOREIGN KEY (CONTENT_SECTION) REFERENCES CONTENT(ID_CONTENT)\n" +
+            "    FOREIGN KEY (COURSE_SECTION) REFERENCES COURSE(ID_COURSE)\n" +
             ")"
 
     private final val TB_SHOPPING_CAR = "CREATE TABLE SHOPPING_CAR (\n" +
@@ -139,7 +139,17 @@ class connection(context: Context): SQLiteOpenHelper(context, "elearning.db", nu
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int)
     {
-        TODO("Not yet implemented")
+        if(oldVersion == 1)
+        {
+            if (db != null)
+            {
+                db.execSQL("DROP TABLE SECTION")
+                db.execSQL("DROP TABLE CONTENT")
+
+                db.execSQL(TB_CONTENT)
+                db.execSQL(TB_SECTION)
+            }
+        }
     }
 
 }

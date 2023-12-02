@@ -102,13 +102,14 @@ class Login : AppCompatActivity()
 
         if(!res.emptyOrNot(email_login) && !res.emptyOrNot(password_login))
         {
-            var query_login = "SELECT NUSER, PSURNAME, MSURNAME, DESCRIPTION, TYPE_USER_USER, INFORMATION_USER FROM USER WHERE EMAIL = ? AND PASSWORD = ?"
+            var query_login = "SELECT ID_USER, NUSER, PSURNAME, MSURNAME, DESCRIPTION, TYPE_USER_USER, INFORMATION_USER FROM USER WHERE EMAIL = ? AND PASSWORD = ?"
             var clauses = arrayOf(email_login, password_login)
             var cursor: Cursor = db.rawQuery(query_login, clauses)
 
             if(cursor.moveToFirst())
             {
                 //Variables to save the data of the user that we can use it in others functions
+                val idUser: String = cursor.getString(cursor.getColumnIndex("ID_USER"))
                 val nameUser: String = cursor.getString(cursor.getColumnIndex("NUSER"))
                 val pSurNameUser: String = cursor.getString(cursor.getColumnIndex("PSURNAME"))
                 val mSurNameUser: String = cursor.getString(cursor.getColumnIndex("MSURNAME"))
@@ -116,6 +117,7 @@ class Login : AppCompatActivity()
                 val typeUser : String = cursor.getString(cursor.getColumnIndex("TYPE_USER_USER"))
                 val idInformation: String? = cursor.getString(cursor.getColumnIndex("INFORMATION_USER"))
 
+                editor.putString("idUser", idUser)
                 editor.putString("emailUser", email_login)
                 editor.putString("passwordUser", password_login)
                 editor.putString("nameUser", nameUser)

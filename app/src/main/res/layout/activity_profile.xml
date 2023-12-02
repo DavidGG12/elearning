@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtWelcome"
         app:layout_constraintVertical_bias="0.06"
-        tools:srcCompat="@drawable/profile"
+        tools:srcCompat="@drawable/usuario"
         />
 
     <TextView
@@ -187,10 +187,12 @@
                     android:layout_weight="0"
                     android:backgroundTint="@color/btnAdd"
                     android:visibility="invisible"
+                    android:onClick="addCourse"
                     android:text="+" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/teacherRegister"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
