@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import org.w3c.dom.Text
 
 
 class functions()
@@ -118,6 +119,34 @@ class DocumentsAdapter(context: Context, resource: Int, objects: List<Documents_
         val textName: TextView = view.findViewById(R.id.txtViewName)
 
         textName.text = document?.nDocument
+
+        return view
+    }
+}
+
+data class Courses(val titleCourse: String, val priceCourse: Double)
+
+class CoursesAdapter(context: Context, resource: Int, objects: List<Courses>): ArrayAdapter<Courses>(context, resource, objects)
+{
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
+    {
+        val course = getItem(position)
+
+        val view: View = convertView
+            ?: LayoutInflater.from(context).inflate(R.layout.courses_table, parent, false)
+
+        val titleCourse: TextView = view.findViewById(R.id.txtViewTitleCourse)
+        val priceCourses: TextView = view.findViewById(R.id.txtViewPrice)
+
+        titleCourse.text = course?.titleCourse
+        if(priceCourses != null)
+        {
+            priceCourses.text = "$ " + course?.priceCourse.toString()
+        }
+        else
+        {
+            priceCourses.text = "Propio"
+        }
 
         return view
     }

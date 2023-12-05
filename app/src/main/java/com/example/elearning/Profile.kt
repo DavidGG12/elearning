@@ -1,8 +1,10 @@
 package com.example.elearning
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +14,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -36,6 +39,8 @@ class Profile : AppCompatActivity()
     private lateinit var btnAddTeacher: Button
     private lateinit var teacherRegisterResources: LinearLayout
 
+    private lateinit var listViewCourses: ListView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
@@ -59,8 +64,9 @@ class Profile : AppCompatActivity()
         txtDescription = findViewById(R.id.txtDescription)
         txtBxDescription = findViewById(R.id.txtBxDescription)
 
+        listViewCourses = findViewById(R.id.listViewCourses)
+
         teacherRegisterResources = findViewById(R.id.teacherRegister)
-        spnrTeacherCourses = findViewById(R.id.spnrTeacher)
         btnAddTeacher = findViewById(R.id.btnAddCourse)
 
         val valueDescription = sharedPreferences.getString("descriptionUser", "")
@@ -78,8 +84,9 @@ class Profile : AppCompatActivity()
         if(validateTeacher == "3")
         {
             teacherRegisterResources.visibility = View.GONE
+            listViewCourses.visibility = View.VISIBLE
+            fillList(true)
             btnAddTeacher.visibility = View.VISIBLE
-            spnrTeacherCourses.visibility = View.VISIBLE
         }
 
         toolbar.setOnClickListener{
@@ -126,6 +133,59 @@ class Profile : AppCompatActivity()
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+
+    @SuppressLint("Range")
+    private fun fillList(isTeacher: Boolean)
+    {
+        var listFill = mutableListOf<Courses>()
+        val idUser: String? = sharedPreferences.getString("idUser", "")
+        var query: String = ""
+        var values: Array<String> = emptyArray()
+
+        if(isTeacher == true)
+        {
+            query = "SELECT NCOURSE, PRICE FROM COURSE WHERE TEACHER_COURSE = ?"
+            values = arrayOf(idUser.toString())
+        }
+        else if(isTeacher == false)
+        {
+            //Check how to make the query
+        }
+
+        val cursor: Cursor = db.rawQuery(query, values)
+
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                val titleCourse = cursor.getString(cursor.getColumnIndex("NCOURSE"))
+                val priceCourse = cursor.getDouble(cursor.getColumnIndex("PRICE"))
+                val courses = Courses(titleCourse, priceCourse)
+                listFill.add(courses)
+            }while (cursor.moveToNext())
+        }
+        cursor.close()
+
+        val adapter = CoursesAdapter(this, R.layout.courses_table, listFill)
+        listViewCourses.adapter = adapter
+
+        if(isTeacher == true)
+        {
+            listViewCourses.setOnItemClickListener{_, _, position, _ ->
+                val clickedCourse = listFill[position]
+                val titleCourse = clickedCourse.titleCourse.toString()
+                val vtnCourse = Intent(this, CourseView::class.java)
+                vtnCourse.putExtra("title", titleCourse)
+                vtnCourse.putExtra("teacherID", sharedPreferences.getString("idUser", ""))
+                startActivity(vtnCourse)
+            }
+        }
+        else if(isTeacher == false)
+        {
+
+        }
     }
 
 

@@ -300,7 +300,7 @@ class AddCourse : AppCompatActivity()
             {
                 val newRowId = db.insert("COURSE", null, ContentValues().apply {
                     put("NCOURSE", titleCourse.toString().toUpperCase())
-                    put("NCOURSE", descriptionCourse.toString().toUpperCase())
+                    put("DESCRIPTION", descriptionCourse.toString().toUpperCase())
                     put("PRICE", priceCourse.toString())
                     put("TEACHER_COURSE", idTeacher)
                     put("SUBCATEGORY_COURSE", ID_SUBCATEGORY_SELECTED)
