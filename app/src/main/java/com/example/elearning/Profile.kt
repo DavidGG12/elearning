@@ -18,6 +18,7 @@ import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import org.w3c.dom.Text
 import java.sql.SQLException
@@ -34,12 +35,11 @@ class Profile : AppCompatActivity()
     private lateinit var txtDescription: TextView
     private lateinit var txtBxDescription: EditText
 
-
-    private lateinit var spnrTeacherCourses: Spinner
     private lateinit var btnAddTeacher: Button
     private lateinit var teacherRegisterResources: LinearLayout
 
     private lateinit var listViewCourses: ListView
+    private lateinit var lbUserCourses: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +65,7 @@ class Profile : AppCompatActivity()
         txtBxDescription = findViewById(R.id.txtBxDescription)
 
         listViewCourses = findViewById(R.id.listViewCourses)
+        lbUserCourses = findViewById(R.id.lbUserCourses)
 
         teacherRegisterResources = findViewById(R.id.teacherRegister)
         btnAddTeacher = findViewById(R.id.btnAddCourse)
@@ -85,8 +86,13 @@ class Profile : AppCompatActivity()
         {
             teacherRegisterResources.visibility = View.GONE
             listViewCourses.visibility = View.VISIBLE
+            lbUserCourses.visibility = View.GONE
             fillList(true)
             btnAddTeacher.visibility = View.VISIBLE
+        }
+        else
+        {
+            fillList(false)
         }
 
         toolbar.setOnClickListener{
@@ -98,8 +104,24 @@ class Profile : AppCompatActivity()
     override public fun onCreateOptionsMenu(menu: Menu?): Boolean
     {
         menuInflater.inflate(R.menu.menu, menu)
+
+        val searchItem = menu?.findItem(R.id.app_bar_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                var courseSearch = query.toString()
+                goBrowse(courseSearch, true)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                return true
+            }
+        })
+
         return true
-        //return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -131,6 +153,11 @@ class Profile : AppCompatActivity()
                     startActivity(intent)
                 }
             }
+
+            R.id.btnShoppingCar ->{
+                val vtnCar = Intent(this, ShoppingCar::class.java)
+                startActivity(vtnCar)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -146,12 +173,15 @@ class Profile : AppCompatActivity()
 
         if(isTeacher == true)
         {
-            query = "SELECT NCOURSE, PRICE FROM COURSE WHERE TEACHER_COURSE = ?"
+            query = "SELECT NCOURSE, DESCRIPTION, PRICE, TEACHER_COURSE FROM COURSE WHERE TEACHER_COURSE = ?"
             values = arrayOf(idUser.toString())
         }
-        else if(isTeacher == false)
+        else
         {
-            //Check how to make the query
+            query = "SELECT NCOURSE, DESCRIPTION, PRICE, TEACHER_COURSE FROM SHOPPING_CAR " +
+                    "INNER JOIN COURSE ON SHOPPING_CAR.COURSE_CAR = COURSE.ID_COURSE " +
+                    "WHERE USER_CAR = ? AND STATUS = ?"
+            values = arrayOf(sharedPreferences.getString("idUser", "").toString(), "PURCHASED")
         }
 
         val cursor: Cursor = db.rawQuery(query, values)
@@ -161,14 +191,19 @@ class Profile : AppCompatActivity()
             do
             {
                 val titleCourse = cursor.getString(cursor.getColumnIndex("NCOURSE"))
-                val priceCourse = cursor.getDouble(cursor.getColumnIndex("PRICE"))
-                val courses = Courses(titleCourse, priceCourse)
+                val descriptionCourse = cursor.getString(cursor.getColumnIndex("DESCRIPTION"))
+                var priceCourse: Double? = 0.0
+                if(isTeacher == true) {priceCourse = cursor.getDouble(cursor.getColumnIndex("PRICE"))}
+                else {priceCourse = null}
+                val idTeacher = cursor.getString(cursor.getColumnIndex("TEACHER_COURSE"))
+
+                val courses = Courses(titleCourse, descriptionCourse, priceCourse, idTeacher)
                 listFill.add(courses)
             }while (cursor.moveToNext())
         }
         cursor.close()
 
-        val adapter = CoursesAdapter(this, R.layout.courses_table, listFill)
+        val adapter = CoursesAdapter(this, R.layout.courses_table, false, listFill)
         listViewCourses.adapter = adapter
 
         if(isTeacher == true)
@@ -178,13 +213,9 @@ class Profile : AppCompatActivity()
                 val titleCourse = clickedCourse.titleCourse.toString()
                 val vtnCourse = Intent(this, CourseView::class.java)
                 vtnCourse.putExtra("title", titleCourse)
-                vtnCourse.putExtra("teacherID", sharedPreferences.getString("idUser", ""))
+                vtnCourse.putExtra("teacherID", idUser)
                 startActivity(vtnCourse)
             }
-        }
-        else if(isTeacher == false)
-        {
-
         }
     }
 
@@ -242,6 +273,7 @@ class Profile : AppCompatActivity()
 
     public fun logout(v: View)
     {
+        editor.remove("idUser")
         editor.remove("emailUser")
         editor.remove("passwordUser")
         editor.remove("nameUser")
@@ -264,5 +296,15 @@ class Profile : AppCompatActivity()
     {
         val vtnAddCourse = Intent(this, AddCourse::class.java)
         startActivity(vtnAddCourse)
+    }
+
+    private fun goBrowse(browse: String?, spnrOrSearch: Boolean)
+    {
+        if(browse != null && spnrOrSearch)
+        {
+            val vtnBrowse = Intent(this, Browse::class.java)
+            vtnBrowse.putExtra("courseSearch", browse)
+            startActivity(vtnBrowse)
+        }
     }
 }

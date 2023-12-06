@@ -13,7 +13,7 @@
     <TextView
         android:id="@+id/lbTitleCourse"
         android:layout_width="279dp"
-        android:layout_height="38dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginTop="64dp"
         android:text="Título"
@@ -58,7 +58,8 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/lbPriceCourse"
         app:layout_constraintTop_toBottomOf="@+id/lbDescriptionCourse"
-        app:srcCompat="@drawable/carrito_de_compras_18" />
+        app:srcCompat="@drawable/carrito_de_compras_18"
+        android:onClick="addShop"/>
 
     <Button
         android:id="@+id/btnDelete"
@@ -74,8 +75,34 @@
         app:layout_constraintStart_toEndOf="@+id/lbPriceCourse"
         app:layout_constraintTop_toBottomOf="@+id/lbDescriptionCourse" />
 
+    <Spinner
+        android:id="@+id/spnrSection"
+        android:visibility="gone"
+        android:layout_width="262dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="112dp"
+        app:layout_constraintBottom_toTopOf="@+id/listSections"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbDescriptionCourse"
+        app:layout_constraintVertical_bias="0.0" />
+
     <ListView
         android:id="@+id/listSections"
+        android:layout_width="349dp"
+        android:layout_height="336dp"
+        android:layout_marginTop="700dp"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbPriceCourse"
+        app:layout_constraintVertical_bias="0.87" />
+
+    <ListView
+        android:id="@+id/listContent"
+        android:visibility="gone"
         android:layout_width="349dp"
         android:layout_height="336dp"
         android:layout_marginTop="700dp"

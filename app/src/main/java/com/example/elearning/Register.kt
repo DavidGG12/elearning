@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import java.lang.Exception
 import java.sql.SQLException
@@ -61,8 +62,24 @@ class Register : AppCompatActivity()
     override public fun onCreateOptionsMenu(menu: Menu?): Boolean
     {
         menuInflater.inflate(R.menu.menu, menu)
+
+        val searchItem = menu?.findItem(R.id.app_bar_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                var courseSearch = query.toString()
+                goBrowse(courseSearch, true)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                return true
+            }
+        })
+
         return true
-        //return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -93,6 +110,11 @@ class Register : AppCompatActivity()
                     val intent = Intent(this, Login::class.java)
                     startActivity(intent)
                 }
+            }
+
+            R.id.btnShoppingCar ->{
+                val vtnCar = Intent(this, ShoppingCar::class.java)
+                startActivity(vtnCar)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -141,6 +163,16 @@ class Register : AppCompatActivity()
                     }
                 }
             }
+        }
+    }
+
+    private fun goBrowse(browse: String?, spnrOrSearch: Boolean)
+    {
+        if(browse != null && spnrOrSearch)
+        {
+            val vtnBrowse = Intent(this, Browse::class.java)
+            vtnBrowse.putExtra("courseSearch", browse)
+            startActivity(vtnBrowse)
         }
     }
 }

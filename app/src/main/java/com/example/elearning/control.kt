@@ -124,10 +124,11 @@ class DocumentsAdapter(context: Context, resource: Int, objects: List<Documents_
     }
 }
 
-data class Courses(val titleCourse: String, val priceCourse: Double)
+data class Courses(val titleCourse: String, val descriptionCourse: String, val priceCourse: Double?, val teacherID: String)
 
-class CoursesAdapter(context: Context, resource: Int, objects: List<Courses>): ArrayAdapter<Courses>(context, resource, objects)
+class CoursesAdapter(context: Context, resource: Int, viewOrTeacher: Boolean, objects: List<Courses>): ArrayAdapter<Courses>(context, resource, objects)
 {
+    private val flag = viewOrTeacher
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
     {
         val course = getItem(position)
@@ -136,10 +137,16 @@ class CoursesAdapter(context: Context, resource: Int, objects: List<Courses>): A
             ?: LayoutInflater.from(context).inflate(R.layout.courses_table, parent, false)
 
         val titleCourse: TextView = view.findViewById(R.id.txtViewTitleCourse)
+        val descriptionCourse: TextView = view.findViewById(R.id.txtViewDescriptionCourse)
         val priceCourses: TextView = view.findViewById(R.id.txtViewPrice)
+        val idTeacher: TextView = view.findViewById(R.id.lbIdTeacher)
 
         titleCourse.text = course?.titleCourse
-        if(priceCourses != null)
+        descriptionCourse.text = course?.descriptionCourse
+        idTeacher.text = course?.teacherID
+        if(flag == false)
+        { descriptionCourse.visibility = View.GONE }
+        if(course?.priceCourse != null)
         {
             priceCourses.text = "$ " + course?.priceCourse.toString()
         }
@@ -147,6 +154,24 @@ class CoursesAdapter(context: Context, resource: Int, objects: List<Courses>): A
         {
             priceCourses.text = "Propio"
         }
+
+        return view
+    }
+}
+
+data class Content(val nContent: String)
+class ContentAdapter(context: Context, resource: Int, objects: List<Content>): ArrayAdapter<Content>(context, resource, objects)
+{
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
+    {
+        val content = getItem(position)
+
+        val view: View = convertView
+            ?: LayoutInflater.from(context).inflate(R.layout.content_table, parent, false)
+
+        val nContent: TextView = view.findViewById(R.id.txtContent)
+
+        nContent.text = content?.nContent
 
         return view
     }

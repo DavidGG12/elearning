@@ -372,6 +372,7 @@ class AddCourse : AppCompatActivity()
         }
     }
 
+    @SuppressLint("Range")
     fun registerContent(v: View)
     {
         val videoName = txtNameContent.text
@@ -383,6 +384,13 @@ class AddCourse : AppCompatActivity()
             {
                 val emailTeacher = sharedPreferences.getString("emailUser", "")
                 val sectionSelected = spnrSection.selectedItem.toString()
+                var sectionId = ""
+                val queryIDSection = "SELECT ID_SECTION FROM SECTION WHERE NSECTION = ?"
+                val cursor = db.rawQuery(queryIDSection, arrayOf(sectionSelected))
+                if (cursor.moveToFirst())
+                {
+                    sectionId = cursor.getString(cursor.getColumnIndex("ID_SECTION"))
+                }
                 val reference = "teachers/$emailTeacher/courses/$TITLE_COURSE/$sectionSelected/${videoName}.mp4"
                 val contentReference = storageReference.child(reference)
 
@@ -392,7 +400,7 @@ class AddCourse : AppCompatActivity()
                                 "RUTH_CONTENT," +
                                 "SECTION_CONTENT" +
                                 ") VALUES (?, ?, ?)"
-                        val valuesContent = arrayOf(videoName, reference, sectionSelected)
+                        val valuesContent = arrayOf(videoName, reference, sectionId)
                         db.execSQL(queryContent, valuesContent)
 
                         Toast.makeText(this, "Registrado", Toast.LENGTH_SHORT).show()

@@ -218,6 +218,13 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/lbUserCourses"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tus cursos:" />
+
             <ListView
                 android:id="@+id/listViewCourses"
                 android:layout_width="match_parent"
