@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore.Video
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -314,7 +315,20 @@ class CourseView : AppCompatActivity()
         val adapterTable = DocumentsAdapter(this, R.layout.documents_table, listTableContent)
         tableContent.adapter = adapterTable
 
-        tableContent
+        tableContent.setOnItemClickListener{_, _, position, _ ->
+            val clickedVideo = listTableContent[position]
+            val queryRuth = "SELECT RUTH_CONTENT FROM CONTENT WHERE NCONTENT = ?"
+            val valuesRuth = arrayOf(clickedVideo.nDocument)
+            val cursor = db.rawQuery(queryRuth, valuesRuth)
+
+            if(cursor.moveToFirst())
+            {
+                val ruth = cursor.getString(cursor.getColumnIndex("RUTH_CONTENT"))
+                val vtnPlayer = Intent(this, VideoPlayer::class.java)
+                vtnPlayer.putExtra("ruth", ruth)
+                startActivity(vtnPlayer)
+            }
+        }
     }
 
     fun deleteCourse(v: View)
